@@ -1,50 +1,173 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>leaflet-map-simple</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="utf-8">
+    <meta charset=utf-8 />
+    <title>Final Map: Neighborhoods</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-  <!-- Load Leaflet code library: see http://leafletjs.com/download.html -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 
-  <!-- Position the map and title with Cascading Style Sheet (CSS) -->
-  <style>
-  body { margin:0; padding:0; }
-  #map { position: absolute; top:0; bottom:0; right:0; left:0; }
-  #map-title { position: relative; margin-top: 10px; margin-left: 50px; float: left; background: white; border: 2px solid rgba(0,0,0,0.2); padding: 6px 8px; font-family: Helvetica; font-weight: bold; font-size: 24px; z-index: 800; }
-  </style>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        #map {
+            width: 80%;
+            height: 540px;
+            margin: 10px auto;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+    </style>
 </head>
+
 <body>
+    <header>
+        <h1>Philadelphia Public Art</h1>
+        <h2>Public Art in Center City, Poplar and University City</h2>
+    </header>
 
-  <!-- Display the map and title with HTML division tags  -->
-  <div id="map-title">Philadelphia Public Art by Medium</div>
-  <div id="map"></div>
+    <div id='map'></div>
 
-  <!-- Create the interactive map content with JavaScript (.js) -->
-  <script>
+    <footer>
+        <p>Map authored by Jessie Brain</p>
+        <p>Showing the pieces of Philadelphia Public Art in the Center City (Green), Poplar (Orange) and University City neighborhoods (Blue). Philadelphia Public Art Pieces GeoJSON from OpenDataPhilly.</p>
+    </footer>
 
-  /* Set up the initial map center and zoom level */
-  var map = L.map('map', {
-    center: [41.77, -72.69], // EDIT coordinates to re-center map
-    zoom: 12,  // EDIT from 1 (zoomed out) to 18 (zoomed in)
-    scrollWheelZoom: false,
-    tap: false
-  });
+    <script src="art.js"></script>
+    <script>
 
-  /* display basemap tiles -- see others at https://leaflet-extras.github.io/leaflet-providers/preview/ */
-  L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://osm.org/copyright">\
-        OpenStreetMap</a> contributors, &copy;\
-        <a href="https://carto.com/attribution">CARTO</a>'
-  }).addTo(map);
+      var map = L.map('map', {
+          center: [39.9526,-75.1652],
+          zoom: 14,
+      });
+      
+      var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+          subdomains: 'abcd',
+          maxZoom: 19
+      });  
+      
+      tiles.addTo(map);
 
-  /* Display a point marker with pop-up text */
-  L.marker([41.77, -72.69]).addTo(map) // EDIT marker coordinates
-  .bindPopup("Insert pop-up text here"); // EDIT pop-up text message
+//Center City
+var myStyleCC = {"color": "green"}
+var CC =L.geoJson(art, {
+          style: myStyleCC,function(feature,latlng){
+              
+          },
+          
+          
+      filter : function(feature, layer){
+              if(feature.properties.neighborhood == "Center City"){
+                  return true
+                  
+              };
+             console.log(feature);
+          },
+onEachFeature : function(feature,layer) {
+    layer.on('click', function() {
+    layer.setStyle({
+        fillColor: 'green'
+    });
+});
+      var name = feature.properties.title
+      var artist = feature.properties.artist
+      var year = feature.properties.date_
+          var popup = ("<b style = 'color:green'>"+name+" by "+artist+" ("+year+")"+"</b>")
+                       layer.bindPopup(popup)
+          }
+          
+          
+      }).addTo(map);        
+//Poplar
+var myStylePop = {"color": "#ff7800"}
+var poplar = L.geoJson(art, {
+          style: myStylePop,function(feature,latlng) {
+            
+          },
+          
+          
+      filter : function(feature, layer){
+              if(feature.properties.neighborhood == "Poplar"){
+                  return true
+                  
+              };
+             console.log(feature);
+          },
+    onEachFeature : function(feature,layer) {
+    layer.on('click', function() {
+    layer.setStyle({
+        fillColor: 'orange'
+    });
+});
+      var name = feature.properties.title
+      var artist = feature.properties.artist
+      var year = feature.properties.date_
+          var popup = ("<b style = 'color:orange'>"+name+" by "+artist+" ("+year+")"+"</b>")
+                       layer.bindPopup(popup)
+          }
+          
+          
+      }).addTo(map);
+//University City
+var UCity = L.geoJson(art, {
+          style: function(feature,latlng) {
+              console.log(feature.properties)
+          },
+          
+          
+      filter : function(feature, layer){
+              if(feature.properties.neighborhood == "University City"){
+                  return true
+                  
+              };
+             console.log(feature);
+          },
+     onEachFeature : function(feature,layer) {
+    layer.on('click', function() {
+    layer.setStyle({
+        fillColor: 'blue'
+    });
+});
+      var name = feature.properties.title
+      var artist = feature.properties.artist
+      var year = feature.properties.date_
+          var popup = ("<b style = 'color:blue'>"+name+" by "+artist+" ("+year+")"+"</b>")
+                       layer.bindPopup(popup)
+          }
+          
+          
+      }).addTo(map);                             
+          
 
-  </script>
+    </script>
+    
 </body>
+
 </html>
